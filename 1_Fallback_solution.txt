@@ -1,0 +1,30 @@
+Fallback
+Difficulty 1/10
+
+Look carefully at the contract's code below.
+
+You will beat this level if
+
+you claim ownership of the contract
+you reduce its balance to 0
+
+
+Things that might help
+
+How to send ether when interacting with an ABI
+How to send ether outside of the ABI
+Converting to and from wei/ether units (see help() command)
+Fallback methods
+
+
+First thing I gotta do is to make sure that I get the ownership of the contract.
+To get the ownership of the contract, I need to call receive() function.
+Receive function is triggered when sending transactions without any data.
+but in the require of receive() function, I need to have more than 0 value in
+contributions mapping. So I need to first sendTransaction using contribute() function.
+Since I will be using sendTransaction() method of web3.js, I need to first send ethers
+to the smart contract when calling contribute() and the function's information needs to be inside the options as ABI bytes string.
+
+https://web3js.readthedocs.io/en/v1.7.0/web3-eth.html?highlight=sendTransaction#sendtransaction
+
+So I will try. 
