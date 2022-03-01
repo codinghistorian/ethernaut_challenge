@@ -55,6 +55,11 @@ Transaction mined. Now let's check the owner of the contract.
 Yep, I am the owner.
 Challenge solved.
 
+Ah, shit. I need to drain the contract.
+
+    contract.withdraw();
+
+Alright, level solved.
 
 So, it seems like when I sendTransactions, I don't neccessarily have to put a whole a lot of big and long abi
 in the data. Just need to use signature from the abi object. I didn't know this cuz usually when I call
