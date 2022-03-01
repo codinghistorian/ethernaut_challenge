@@ -28,3 +28,46 @@ to the smart contract when calling contribute() and the function's information n
 https://web3js.readthedocs.io/en/v1.7.0/web3-eth.html?highlight=sendTransaction#sendtransaction
 
 So I will try. 
+
+or, maybe the signature from abi object will do its job?
+need to try.
+hm.. transaction was mined when I sent Transaction as
+
+    sendTransaction({from : "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c"  ,to: "0x51117C321d073fAC2bf4b89c10104F10624f39df", value: toWei("0.0001"), data : "0xd7bb99ba"}).then(function(receipt){
+        console.log(receipt);
+    });
+
+I will have to check contributions mapping to see if my contribution really went through.
+
+    await contract.contributions("0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c");
+
+returns an array words lengh of 2. Let's just continue.
+
+    sendTransaction({from : "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c"  ,to: "0x51117C321d073fAC2bf4b89c10104F10624f39df", value: toWei("0.001")}).then(function(receipt){
+        console.log(receipt);
+    });
+
+Transaction mined. Now let's check the owner of the contract.
+
+    await contract.owner();
+    "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c"
+
+Yep, I am the owner.
+Challenge solved.
+
+
+So, it seems like when I sendTransactions, I don't neccessarily have to put a whole a lot of big and long abi
+in the data. Just need to use signature from the abi object. I didn't know this cuz usually when I call
+function in ethers.js, making a instance of a contract and calling functions with its name was common.
+
+Sending ethers to the contract calling contribute() function;
+
+    sendTransaction({from : "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c"  ,to: "0x51117C321d073fAC2bf4b89c10104F10624f39df", value: toWei("0.0001"), data : "0xd7bb99ba"}).then(function(receipt){
+        console.log(receipt);
+    });
+
+Sending ethers to the contract triggering receive()
+
+    sendTransaction({from : "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c" ,to: "0x51117C321d073fAC2bf4b89c10104F10624f39df", value: toWei("0.001"), data: ""}).then(function(receipt){
+        console.log(receipt);
+    });
