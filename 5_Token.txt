@@ -1,0 +1,31 @@
+220308 23:28 KST
+This one is about whether the hackers know about overflow/underflow.
+
+Token
+Difficulty 3/10
+
+The goal of this level is for you to hack the basic token contract below.
+
+You are given 20 tokens to start with and you will beat the level if you somehow manage to get your hands on any additional tokens. Preferably a very large amount of tokens.
+
+  Things that might help:
+
+What is an odometer?
+
+So I just have to send 21 tokens some random guy then I will have a lot of tokens.
+
+
+Token
+Level completed!
+Difficulty 3/10
+
+Overflows are very common in solidity and must be checked for with control statements such as:
+
+if(a + c > a) {
+  a = a + c;
+}
+An easier alternative is to use OpenZeppelin's SafeMath library that automatically checks for overflows in all the mathematical operators. The resulting code looks like this:
+
+a = a.add(c);
+If there is an overflow, the code will revert.
+

