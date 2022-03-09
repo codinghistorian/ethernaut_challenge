@@ -1,0 +1,23 @@
+Vault
+Difficulty 3/10
+
+Unlock the vault to pass the level!
+
+
+220310 03:37 I think there are two ways.
+
+either
+1)figure out what was the password (I think I can check etherscan to know what was in the constructor)
+
+2)change
+bool locked upstream from an inheriting contract.
+
+03:42 KSt I found the transaction log in etherscan.
+
+https://rinkeby.etherscan.io/tx/0x150bcbb70e971a7ba28c6f2e7cf39e5e141985f1314a77882d39c14fdc32a648
+
+the input data was 
+
+0xdfc86b17000000000000000000000000f94b476063b6379a3c8b6c836efb8b3e10ede188
+
+so i think this is the password.
