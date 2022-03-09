@@ -21,3 +21,95 @@ the input data was
 0xdfc86b17000000000000000000000000f94b476063b6379a3c8b6c836efb8b3e10ede188
 
 so i think this is the password.
+
+hm... keeps givign me error
+
+220310 03:48 ah. the hex above is not password. it is input data, so I think it means
+it's the data that was input when constructor was called.
+
+
+How to decode input data from a transaction?
+https://ethereum.stackexchange.com/questions/11144/how-to-decode-input-data-from-a-transaction
+
+hex ToAscii
+https://web3js.readthedocs.io/en/v1.2.9/web3-utils.html?highlight=toascii#hextoascii
+
+web3.utils.hexToAscii(hex)
+
+I will try this on the console.
+
+I got this
+"ßÈk\u0017\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000ùKG`c¶7<lnû>\u0010íá"
+
+ASCII to text
+�F
+
+hm.. when I do hex to text
+���p��v;cy�ȶ�6︳��
+
+I got this.
+
+
+maybe I should try
+https://ethereum.stackexchange.com/questions/8870/how-to-get-string-from-hex-on-smart-contracts-results
+web3.utils.hexToUtf8
+
+220310 04:05
+
+I came here
+
+https://cleanunicorn.github.io/santoku/#/
+
+input data in the encoded abi
+type List
+bytes32 _password
+
+then I got
+
+0x000000000000000000000000f94b476063b6379a3c8b6c836efb8b3e10ede188
+
+as value
+
+so I do this in the console.
+contract.unlock('0x000000000000000000000000f94b476063b6379a3c8b6c836efb8b3e10ede188');
+
+hm...but when I checked the locked variable, still locked was true..
+
+oh,so  it is the last alphabet that starts from f and so on that was the argument
+
+
+220310 04:13
+ohhh.. shit never mind. I should have put in encoded abi.
+
+04:18 Now I tried this
+
+
+https://ethtx.info/
+and got 
+this
+https://ethtx.info/rinkeby/0x150bcbb70e971a7ba28c6f2e7cf39e5e141985f1314a77882d39c14fdc32a648/
+
+I think this could be the password
+
+
+I try this now 04:21 KST
+await contract.unlock('0x000000000000000000000000a62db47d3ec641dc9430bc8e36a41a59fb33ee09');
+hm....and it is still locked.
+
+shibal
+https://www.moesif.com/solidity-abi-hex-decoder/decode
+when I usd this above
+
+0xdfc86b17000000000000000000000000f94b476063b6379a3c8b6c836efb8b3e10ede188
+
+decode
+and the result is
+Attempted to decode with createLevelInstance(address)
+
+Error: hex string must have 0x prefix (arg="value", value="000000000000000000000000f94b476063b6379a3c8b6c836efb8b3e10ede188", version=4.0.49)
+
+I was working with totally wrong input data.
+
+220310 04:39 KST
+okay. now this is the vault contract.
+https://rinkeby.etherscan.io/address/0xa62db47d3ec641dc9430bc8e36a41a59fb33ee09#code
