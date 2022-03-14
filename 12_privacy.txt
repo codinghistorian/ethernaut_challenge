@@ -1,0 +1,74 @@
+Privacy
+Difficulty 8/10
+
+The creator of this contract was careful enough to protect the sensitive areas of its storage.
+
+Unlock this contract to beat the level.
+
+Things that might help:
+
+Understanding how storage works
+Understanding how parameter parsing works
+Understanding how casting works
+Tips:
+
+Remember that metamask is just a commodity. Use another tool if it is presenting problems. Advanced gameplay could involve using remix, or your own web3 provider.
+
+
+220314 15:09 KST
+I think I just need to read the private data in the row.
+I will just read this link below.
+
+https://studygroup.moralis.io/t/how-to-read-private-variables/38777/2
+
+
+the array that has key is in the 5th place(starting with zero) in storage, so
+
+I guess I can just use this?
+
+web3.eth.getStorageAt(contractAddress, 5, (a) => {
+  console.log(a)
+});
+
+and I got 
+0xa0036732b67dc0d2495d3d835c2637867b144ece5ab96af4b7458d49ea10b2de
+
+I think I just need to split them.
+
+into 3 peaces.
+
+and the third element is turned into bytes16.
+
+https://ethereum.stackexchange.com/questions/13143/how-can-i-split-a-bytes32-source-into-two-halfs-and-store-them-in-bytes16
+
+maybe the bytes are empty?? i mean for the key.
+cuz, when I accessed the private data with  getStorageAt, it only showed me on bytes32
+the third one should be empty then.
+maybe just 0x00000..to 16th byte? let's try
+
+0x00000000000000000000000000000000
+
+hm.. did not work.
+
+what if I try this
+0xa0036732b67dc0d2495d3d835c2637867b144ece5ab96af4b7458d49ea10b2de
+0x00000000000000000000000000000000
+
+oh, I just had to
+
+0xa0036732b67dc0d2495d3d835c263786
+
+
+Privacy
+Level completed!
+Difficulty 8/10
+
+Nothing in the ethereum blockchain is private. The keyword private is merely an artificial construct of the Solidity language. Web3's getStorageAt(...) can be used to read anything from storage. It can be tricky to read what you want though, since several optimization rules and techniques are used to compact the storage as much as possible.
+
+It can't get much more complicated than what was exposed in this level. For more, check out this excellent article by "Darius": How to read Ethereum contract storage
+
+https://medium.com/aigang-network/how-to-read-ethereum-contract-storage-44252c8af925
+
+gotta read the link above carefully
+
+
