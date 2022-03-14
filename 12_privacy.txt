@@ -71,4 +71,57 @@ https://medium.com/aigang-network/how-to-read-ethereum-contract-storage-44252c8a
 
 gotta read the link above carefully
 
+15:38 KST.okay I will read the link below first and then read the link above.
 
+https://coinyuppie.com/in-depth-understanding-of-evm-storage-mechanism-and-security-issues/#:~:text=Storage%20is%20a%20huge%20map,according%20to%20their%20specific%20types.&text=Stack%20is%20the%20so%2Dcalled,output%20data%20of%20EVM%20instructions.
+
+
+15:48 KSt when uint128 and uint 32 are stored in sequence, they are merged in one slot.
+to me, it is even shocking that in the slot, 32 is first stored and then 128 is stored.
+
+endiennss of Ethereum.
+
+https://jeancvllr.medium.com/solidity-tutorial-all-about-bytes-9d88fdb22676#:~:text=Ethereum%20uses%20the%20two%20endianness,%2C%20addresses%2C%20etc%E2%80%A6).
+
+So, since 
+
+Big endian format : strings and bytes
+Little endian format : other types (numbers, addresses, etc…).
+
+bytes are Big endian, timestamp was first stroed and then 17055 was stored after that.
+
+https://medium.com/aigang-network/how-to-read-ethereum-contract-storage-44252c8af925
+
+
+Reading mapping is a whole a lot difference since it needs key
+index = '0000000000000000000000000000000000000000000000000000000000000005'
+key =  '00000000000000000000000xbccc714d56bc0da0fd33d96d2a87b680dd6d0df6'
+let newKey =  web3.sha3(key + index, {"encoding":"hex"})
+console.log(web3.eth.getStorageAt(contractAddress, newKey))
+console.log('DEC: ' + web3.toDecimal(web3.eth.getStorageAt(contractAddress, newKey)))
+result:
+0x0000000000000000000000000000000000000000000000000000000000000058
+DEC: 88
+
+
+reading second struct value is even more interesting
+
+To read second struct value you need to increase newKey value by 1
+function increaseHexByOne(hex) {
+ let x = new BigNumber(hex)
+ let sum = x.add(1)
+ let result = '0x' + sum.toString(16)
+ return result
+}
+index = "0000000000000000000000000000000000000000000000000000000000000006"
+key =  "00000000000000000000000xbccc714d56bc0da0fd33d96d2a87b680dd6d0df6"
+let newKey =  increaseHexByOne(
+  web3.sha3(key + index, {"encoding":"hex"}))
+console.log(web3.eth.getStorageAt(contractAddress,newKey))
+console.log('ASCII: ' +
+ web3.toAscii(web3.eth.getStorageAt(contractAddress, newKey)))
+result:
+0x6465766963655965617200000000000000000000000000000000000000000014
+ASCII: deviceYear
+
+uintarray also follows the similar way to access second, third value
