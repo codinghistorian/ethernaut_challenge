@@ -1,0 +1,71 @@
+Gatekeeper One
+Difficulty 5/10
+
+Make it past the gatekeeper and register as an entrant to pass this level.
+
+Things that might help:
+Remember what you've learned from the Telephone and Token levels.
+You can learn more about the special function gasleft(), in Solidity's documentation (see here and here).
+
+220314 18:17 KST
+
+I think first thing is to make sure that I call this enter() function from a contract.
+and also need to use call function to specify gas.
+
+when I did uint16(tx.origin) meaning my wallet address's uint16, it gave me 5285.
+
+so..I think the key should give me the same number when uint64ed and uint32ed.
+
+anyway, it needs to have 5285
+
+so it should definitely have 14 A5 in the beginning of the key.
+
+
+https://www.tutorialspoint.com/solidity/solidity_conversions.htm
+
+refer to type conversion above.
+
+220315 18:42 KST
+clue1
+
+0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c
+uint16 => 0x14a5
+
+0x00001415 is (uint32(uint64(_gateKey))
+so basically, it means. last digits are 1415
+
+clue2
+
+(uint32(uint64(_gateKey)) != uint64(_gateKey)
+
+for example if
+0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c
+
+
+left hand side of equation is
+0x0000000000000000000000000000000000001415
+
+40 jari.
+
+right hand side is
+0x0000000000000000000000000000000000001415
+
+bytes8(64 bits) is uint64
+
+there is something on the first part of bytes8 _key.
+
+clue3
+
+fuck it. I will just draw it on paper.
+
+uint64 has 6 digits   2**6
+uint16 has 4 digits   2**4
+uint32 has 5 digits   2**5
+
+so, the answer should be sth like
+
+0xa014a5
+
+220315 19:06 KST
+
+let's try.
