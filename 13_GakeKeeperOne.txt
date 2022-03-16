@@ -174,3 +174,16 @@ I did input 16 hex, but why not working?
 okay. the key is alright but the gas is problem
 
 0x111111110000946c
+
+
+hm... they used only
+https://rinkeby.etherscan.io/tx/0x51b7e0aa523ddfd841f355925fabfcdce19a3a3f6255d68d8a5119b8c0ff7997
+27414 of gas.
+maybe I should 27414 + 8191 as gas amount
+
+15:46 KST hm.. maybe just 8191..?
+
+hm... 8191000 also did not work.
+so how much does gas cost...to call an external function and have a call function in it?
+but still. when I call the other contract's function, I specified gas.
+maybe I misunderstood mod() in safeMath?? but it should be safeMath's modulo. ain't it?
