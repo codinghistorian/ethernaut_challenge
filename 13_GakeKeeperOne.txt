@@ -156,3 +156,21 @@ I will try above.
 first need to deploy smart contract.
 220316 15:03 KST attempt second
 
+
+0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c
+
+0x0000000000000000000asdasdasdasda0000946c
+
+
+0x111111110000946c
+
+
+yeah. 
+
+https://stackoverflow.com/questions/70447003/how-do-i-input-the-parameter-with-bytes4-type-in-remix
+I did input 16 hex, but why not working?
+
+220316 15:29 KST
+okay. the key is alright but the gas is problem
+
+0x111111110000946c
