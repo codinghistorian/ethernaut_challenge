@@ -66,6 +66,93 @@ so, the answer should be sth like
 
 0xa014a5
 
+
+
 220315 19:06 KST
 
 let's try.
+
+ah, shit. I need to make a smart contract too.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract GateKeeperOne {
+  address public target = 0x45306D070231294BfF371dbBe6cDED94bE1f079B;
+  function goTo(bytes8 _haha) external {
+      (bool success , ) = target.call(abi.encodeWithSignature("enter(bytes8)", _haha));
+      require(success, "haha");
+  }
+}
+
+220315 19:12 KST
+0x105285
+let's try this
+
+
+a shibal. bit bytes uint dashi bok sup
+
+
+220316 14:47 KST
+hm... I think I need to think all the number as hex then do the conversion.
+
+gotta do the conversion the way solidity does, not some internet converter does.
+
+oh, and gas should have been specified.
+
+contract GateKeeperOne {
+  address public target = 0x45306D070231294BfF371dbBe6cDED94bE1f079B;
+  function goTo(bytes8 _haha) external {
+      (bool success , ) = target.call{gas: 819100}(abi.encodeWithSignature("enter(bytes8)", _haha));
+      require(success, "haha");
+  }
+}
+
+my wallet address is this
+0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c
+
+third require of gateThree.
+when converted with uint16, only 4 hex remains.
+0x946c
+
+when converted to  uint64 leaves only 21 hex
+0x7609dedCcE79a416E946c
+
+when the above is converted to uint32, only 8 hex remains
+0x416E946c
+
+so, prolly the _gateKey has at the end of it.
+0x0000946c
+
+----------------------------
+
+now the first requirement in gatekeyone
+right hand side
+0x946c
+
+let hand side
+0x0000946c
+ again.. four zeros and 946c
+-------------
+
+anyway, 21 hex in the key. what I got so far is this below
+0x0000946c
+
+-----------------
+requirement two.
+
+0x7609dedCcE79a0000946c
+0x?????????????0000946c
+!=
+0x0000946c
+
+
+it means I just need to put in some number in the first part of the hex.
+
+0xasdasdasdasda0000946c
+
+I will try above.
+
+first need to deploy smart contract.
+220316 15:03 KST attempt second
+
