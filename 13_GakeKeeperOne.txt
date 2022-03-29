@@ -187,3 +187,5 @@ hm... 8191000 also did not work.
 so how much does gas cost...to call an external function and have a call function in it?
 but still. when I call the other contract's function, I specified gas.
 maybe I misunderstood mod() in safeMath?? but it should be safeMath's modulo. ain't it?
+
+prolly 8191 too low gas. but.................................8191000 also did not work... wtf?
