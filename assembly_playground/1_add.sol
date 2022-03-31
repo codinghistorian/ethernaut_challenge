@@ -47,3 +47,5 @@ contract Test {
 
 //220329 19:21 ah! Eureka! when dynamic bytes array in put on a stack, the offset in the memory
 //is added to the stack. so it is 0x80 where the bytes array start. and it is the prefix of length.
+
+//maybe I should try to add different things. I mean all the types available out there.
