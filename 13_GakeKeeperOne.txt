@@ -189,3 +189,280 @@ but still. when I call the other contract's function, I specified gas.
 maybe I misunderstood mod() in safeMath?? but it should be safeMath's modulo. ain't it?
 
 prolly 8191 too low gas. but.................................8191000 also did not work... wtf?
+
+
+220407 00:13 KST
+
+
+0xabcdefghijklmnop
+0x        0000946c
+
+
+0xijklmnop == 0xmnop
+
+0x0000mnop != 0xabcdefghijklmnop
+
+0x0000mnop == 946c
+
+bytes8 is
+0xabcdefgh0000946c
+
+now the gas problem.
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract GateKeeperOne {
+  address public target = 0x45306D070231294BfF371dbBe6cDED94bE1f079B;
+  function goTo(bytes8 _gateKey) external {
+      (bool success , ) = target.call{gas: 819100000}(abi.encodeWithSignature("enter(bytes8)", _gateKey));
+      require(success, "haha");
+  }
+}
+
+
+I will just try thing. I know it ain't gonna work but still.
+
+0xabcdefgh0000946c
+
+... what's wrng with this?
+0xabababab0000946c
+
+I think gas.left() is the problem.
+
+
+220407 16:11
+
+I ran this code below to check how much require's revert
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+
+contract RequireGasCheck {
+
+  modifier gateOne() {
+    require(msg.sender != tx.origin);
+    _;
+  }
+
+  function enter(bytes8 _gateKey) public gateOne returns (bool) {
+    return true;
+  }
+}
+
+
+and checked the OPCODEs.
+
+I need to count till JUMPI  -> which in this case leads to revert but in the quiz does not.
+
+remaining gas
+beginning 79978736
+after revert 79978488
+after JUMPI before revert 79978504
+
+beginning - after JUMPI = 232
+
+now let's add 232 + 8190*100000 gas to the call
+
+819000232. lEt's try with this.
+
+220407 16:18 KST
+okay. did not work.
+I will just try to run the same code without gas.left() to see if my bytes8 is right.
+
+0xabababab0000946c
+
+16:22 KST
+when I did the test withou gateTwo, it still didn't go through, shit. maybe the  bytes8 is not right.
+ah, obviously. I was running the test in Javascript VM(Longdon).. need to change the bytes8.
+
+0xabababab0000ddc4
+
+okay. so it all went through. Now the issue is gas. how to specify gas correctly..
+
+220407 16:30 KST
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+// import '@openzeppelin/contracts/math/SafeMath.sol';
+
+contract GatekeeperOne {
+
+//   using SafeMath for uint256;
+  address public entrant;
+  uint256 public gasLeft1;
+  uint256 public gasLeft2;
+  modifier gateOne() {
+    gasLeft1 = gasleft();
+    require(msg.sender != tx.origin);
+  
+    _;
+  }
+
+//   modifier gateTwo() {
+//     require(gasleft().mod(8191) == 0);
+//     _;
+//   }
+
+  modifier gateThree(bytes8 _gateKey) {
+      gasLeft2 = gasleft();
+      require(uint32(uint64(_gateKey)) == uint16(uint64(_gateKey)), "GatekeeperOne: invalid gateThree part one");
+      require(uint32(uint64(_gateKey)) != uint64(_gateKey), "GatekeeperOne: invalid gateThree part two");
+      require(uint32(uint64(_gateKey)) == uint16(tx.origin), "GatekeeperOne: invalid gateThree part three");
+    _;
+  }
+
+  function enter(bytes8 _gateKey) public gateOne gateThree(_gateKey) returns (bool) {
+    entrant = tx.origin;
+    return true;
+  }
+}
+I used the code above to check gasLefts. Let's just 
+78723478 - 78701326
+gasLeft1 - gasLeft2
+
+2215  + 8191*10000
+
+81912215
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract GateKeeperOne {
+  address public target = 0x45306D070231294BfF371dbBe6cDED94bE1f079B;
+  // address public target = 0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99;
+  function goTo(bytes8 _gateKey) external {
+      (bool success , ) = target.call{gas: 81912215}(abi.encodeWithSignature("enter(bytes8)", _gateKey));
+      // require(success, "haha");
+  }
+}
+16:35 KST
+I tried code above. and the transaction went through. let's see if it worked .
+
+m.... I shouldn't not have commented out require. It did not work.
+
+0xabababab0000946c
+
+test
+0xabababab0000ddc4
+
+
+78723478 - 78701326
+gasLeft1 - gasLeft2
+
+but this time. gasLeft2 is checked right after require.
+22152 + 8191*10000
+
+220407 17:05 KST
+I am going to deploy the original code in JS VM to check gasleft()
+but the issue was importing older version of safeMath. Anyway I made it.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/docs-v3.x/contracts/math/SafeMath.sol';
+
+contract GatekeeperOne {
+
+  using SafeMath for uint256;
+  address public entrant;
+
+  modifier gateOne() {
+    require(msg.sender != tx.origin);
+    _;
+  }
+
+  modifier gateTwo() {
+    require(gasleft().mod(8191) == 0);
+    _;
+  }
+
+  modifier gateThree(bytes8 _gateKey) {
+      require(uint32(uint64(_gateKey)) == uint16(uint64(_gateKey)), "GatekeeperOne: invalid gateThree part one");
+      require(uint32(uint64(_gateKey)) != uint64(_gateKey), "GatekeeperOne: invalid gateThree part two");
+      require(uint32(uint64(_gateKey)) == uint16(tx.origin), "GatekeeperOne: invalid gateThree part three");
+    _;
+  }
+
+  function enter(bytes8 _gateKey) public gateOne gateTwo gateThree(_gateKey) returns (bool) {
+    entrant = tx.origin;
+    return true;
+  }
+}
+
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/docs-v3.x/contracts/math/SafeMath.sol';
+
+contract GatekeeperOne {
+
+  using SafeMath for uint256;
+  address public entrant;
+  uint256 public gasYo1;
+  uint256 public gasYo2;
+
+  modifier gateOne() {
+    gasYo1 = gasleft();
+    require(msg.sender != tx.origin);
+    _;
+  }
+
+  modifier gateTwo() {
+    gasYo2 = gasleft();
+    // require(gasleft().mod(8191) == 0);
+    _;
+  }
+
+  modifier gateThree(bytes8 _gateKey) {
+      require(uint32(uint64(_gateKey)) == uint16(uint64(_gateKey)), "GatekeeperOne: invalid gateThree part one");
+      require(uint32(uint64(_gateKey)) != uint64(_gateKey), "GatekeeperOne: invalid gateThree part two");
+      require(uint32(uint64(_gateKey)) == uint16(tx.origin), "GatekeeperOne: invalid gateThree part three");
+    _;
+  }
+
+  function enter(bytes8 _gateKey) public gateOne gateTwo gateThree(_gateKey) returns (bool) {
+    entrant = tx.origin;
+    return true;
+  }
+}
+
+220407 17:12 KST
+78722972 - 78700823
+
+22149
+
+22149 + 8191*100000
+
+0xabababab0000946c
+
+gasYo2 had 78720723
+closest number that 8191 can get to that is
+78723701 = 9611×8191
+
+
+220407 20:54 KST
+
+alright, let's try again in JS VM
+0xabababab0000ddc4
+
+gasYo1     gasYo2
+78707088 - 78684939
+
+Okay, I will try 78705126 now
+
+220407 21:04 KST
+
+
+gas input 78707319
+gas left  78707052
+
+gas input 78699395
+gas left  78699128
+
+ha... it worked in JS vm but does not work on Rinkeby.. wtf..
