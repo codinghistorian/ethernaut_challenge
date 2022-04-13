@@ -66,3 +66,12 @@ with no ext code.
 Second, 2**64-1 was not ..... 11111111111111111111110
 it was 1111111111111111111
 
+https://www.rapidtables.com/convert/number/binary-to-hex.html
+https://www.rapidtables.com/convert/number/decimal-to-binary.html
+
+
+Gatekeeper Two
+Level completed!
+Difficulty 6/10
+
+Way to go! Now that you can get past the gatekeeper, you have what it takes to join theCyber, a decentralized club on the Ethereum mainnet. Get a passphrase by contacting the creator on reddit or via email and use it to register with the contract at gatekeepertwo.thecyber.eth (be aware that only the first 128 entrants will be accepted by the contract).

