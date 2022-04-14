@@ -17,3 +17,21 @@ So I can just put any number for the function to work..?
 Maybe I should learn how to deploy a RAW evm code.
 
 MAybe I will just try it in JS vm.
+
+220414 16:57 KST
+Maybe I should just use this bytecode deployer?
+https://github.com/Sekin/ethereum-bytecode-deployment
+
+
+220414 17:10 KST
+or maybe I should just try to write opcodes myself.
+
+so
+0)should be able to copy calldata
+1)need to check function selector whatIsTheMeaningOfLife()
+2)Need to somehow match the number inside calldata to a predefined number.
+
+I think this shouldbe enough.
+
+I gotta check how to deal with calldata
+and also how to compare.
