@@ -1,0 +1,10 @@
+220414 14:41 KST
+hm.. this one seems easy..?
+just need to selfDestruct..?
+
+https://swende.se/blog/Ethereum_quirks_and_vulns.html
+
+this is about sending eth first and then create contract.
+
+one thing to note is that, in the game it said 0.5 eth, but now it has changed to
+0.01 eth.
