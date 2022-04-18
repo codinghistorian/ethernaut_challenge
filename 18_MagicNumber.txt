@@ -130,3 +130,53 @@ editing code
         0xCA47E49A
         shift logical right seems to get rid of the value...
         I would rather look at it as shit hout right.
+
+
+    so I guess I can deploy
+
+    PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR PUSH4 0xCA47E49A EQ 
+    in the beginning
+    m...then when can I do EQ of the parameter...and the number I want to be equal to it..
+
+    aaah, so I can do calldataload but SHR a bit differently
+    for example, I can do 0xDE and um... would this work?
+    cuz 0xCA47E49A00000000000...........00000000000001 sth like this.
+    ah, fuck it. I will just 
+    0xDE and EQ it with 0xCA47E49A 
+
+    PUSH1 0x0 CALLDATALOAD PUSH1 0xDE SHR PUSH4 0xCA47E49A0 EQ 
+    but the problem is.. how the hell do I return anything? cuz then I would have to MSTORE
+    the value I want to return to the memory...
+
+    60003560E01C63CA47E49A14
+
+    hm... should I deploy it with abi attached..?
+
+220419 05:08 KST
+Okay. now imma just send transactino without to, containing just 10 bytecodes in data
+    sendTransaction({from: "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c", to: "0x33A83D7bF84D70B21a2C9E72C09e258CC9D50B6d", data: "0x6fab5ddf", value: toWei("0.001")}).then((receipt)=> {console.log(receipt)});
+
+    await sendTransaction({from: "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c", data: "60003560DE1C63CA47E49A014"});
+
+    transactino hash below
+    0x680a0019c051ae13231c19522430f66b18c44e13703e467646c59c8814f0fc70
+
+    shiit. but the transactino failed.
+    in the rinkeby scan it all looks like its good tho.
+
+
+    aaa, alright. now imma try with 
+    60003560E01C63CA47E49A14
+
+        await sendTransaction({from: "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c", data: "60003560E01C63CA47E49A14"});
+
+    contract created properly this time, but submission failed.
+
+
+    aaauuuu maybe I should read this article below
+    https://hackmd.io/@e18r/r1yM3rCCd#1-Environment-setup
+    and also .. what was that
+    https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduction-832efd2d7737/
+    maybe I should go through this to understand better about bytecode
+
+
