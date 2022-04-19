@@ -211,5 +211,23 @@ what if I just directly copy the calldata to memory and return?
     220419 13:06 KST
     DOES IT ALWAYS HAVE TO RETURN STH?
     I MEAN, WHY CAN'T IT JUST THROW .. WHATEVER.
+
+    or just
+    PUSH1 0
+    CALLDATALOAD
+    
+    220419 13;17 KST
+    hm.. what if I just return boolean from EQ
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0xE0
+    SHR           .. leaves just the function selector
+    PUSH4 0xCA47E49A
+    EQ
+    
+    MSTORE
+    0x01
+    0x80
+    RETURN
     
 
