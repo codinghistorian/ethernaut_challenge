@@ -174,9 +174,42 @@ Okay. now imma just send transactino without to, containing just 10 bytecodes in
 
 
     aaauuuu maybe I should read this article below
-    https://hackmd.io/@e18r/r1yM3rCCd#1-Environment-setup
+    https://ha  ckmd.io/@e18r/r1yM3rCCd#1-Environment-setup
     and also .. what was that
     https://blog.openzeppelin.com/deconstructing-a-solidity-contract-part-i-introduction-832efd2d7737/
     maybe I should go through this to understand better about bytecode
 
+    220419 12:47 KST
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0xE0
+    SHR           .. leaves just the function selector
+    PUSH4 0xCA47E49A
+    EQ
+
+    ..and MSTORE
+    return
+
+    60 01
+    60 00
+    f3
+
+220419 12:59 KST
+what if I just directly copy the calldata to memory and return?
+    calldatacopy(0x80, 0, 4)       .. calldatacopy first 4 bytes from 0 to memory 0x80
+    
+    PUSH1 0x04
+    PUSH1 0x00
+    PUSH1 0X80
+    CALLDATACOPY
+
+
+    MLOAD()
+    PUSH4 0xCA47E49A
+    EQ
+
+    220419 13:06 KST
+    DOES IT ALWAYS HAVE TO RETURN STH?
+    I MEAN, WHY CAN'T IT JUST THROW .. WHATEVER.
+    
 
