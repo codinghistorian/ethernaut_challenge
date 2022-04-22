@@ -275,3 +275,65 @@ what if I just directly copy the calldata to memory and return?
     I can check two things
     1)Rinekby scanner to track down the origin
     2)Just go to ethernaut github.
+
+    Chajatda yonom!
+
+    https://rinkeby.etherscan.io/address/0x35be6ebd810edbeb2e9ae38e72ee2a46462336cf#internaltx
+
+
+    https://rinkeby.etherscan.io/address/0x200d3d9ac7bfd556057224e7aeb4161fed5608d0#code
+
+    so it is this 0x200 blablabla.
+    Let's decompile this mofo.
+
+
+    shit
+    220422 14:28 KST
+    so when we look at the instance checking function
+    there is require calldatasize - 4 > 64
+    meaning the calldata should have a size of 
+    max 68 bits(=8 bytes).
+    but man, here is the thing.
+    that -4 is 1 hex.
+    which is just good enough to have a number
+    so the calldata
+    should have
+    function signature(8 bytes) + 1 hex
+
+    that one hex should be...um...1 hex.. but....hm.... oh, maybe 0?
+    let's try to make function signature with uint8. honextly, this is like two hexes
+    but if the value i 0, I think it should work.
+    or.... we can make it as boolean.
+
+    220422 14:36 KST
+    um... I just realized. that 
+      require calldata.size - 4 >= 64
+      is not...for ................whatever i was explaning above.
+      I think I need to take a closer look at what kind of return
+      this function is trying to get to return a 1.
+
+def unknownd38def5b(addr _param1): # not payable
+  require calldata.size - 4 >= 64
+  require ext_code.size(_param1)
+  static call _param1.solver() with:
+          gas gas_remaining wei
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require return_data.size >= 32
+  require ext_code.size(addr(ext_call.return_data))
+  static call addr(ext_call.return_data).whatIsTheMeaningOfLife() with:
+          gas gas_remaining wei
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require return_data.size >= 32
+  if ext_call.return_data == 42:
+      if ext_code.size(ext_call.return_data <= 10:
+          return 1
+      else:
+          return 0 
+  else:
+      return 0
+
+
+    220422 15:00 KST 
+    I will come back tomorrow. 
