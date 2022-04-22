@@ -229,5 +229,49 @@ what if I just directly copy the calldata to memory and return?
     0x01
     0x80
     RETURN
-    
 
+    220422 13:52 KST
+    so, basically it does not have to return anything.
+    It can basically just 'stop' and that's it.
+
+
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0xE0
+    SHR 
+    PUSH4 0xCA47E49A
+    EQ    -12
+    PUSH1 0x0F   
+    JUMPI -14
+    JUMPDEST   -15
+    STOP
+    
+    0x60003560E01C63CA47E49A14600F575B00
+
+    220422 14:00 KST
+    I mean..now I need to shove in the right number. But that number comes from the calldata.
+    the whole process of manipulating calldata is like...at east 3,4 opcodes...
+    shit. I will try the one above anyway. Let's see what happens.
+
+    0x60003560E01C63CA47E49A14600F575B00
+    
+    Now I need to send transaction. Let's try it with web3.js
+
+    await sendTransaction({from: "0x14a5b8f7DF340D89F3f7609dedCcE79a416E946c", data: "0x60003560E01C63CA47E49A14600F575B00"});
+
+    https://rinkeby.etherscan.io/tx/0x28847b98db67903805041e3bae217338358c085f88d575fcee529bdc90d312ae
+
+    0x09ee9cf660afd55161276505d44c4061a0ea2b6b
+    contract above created!
+    I wanna put it into the solver. I know it's gonna fail but what the hell.
+
+
+    220422 14:09 KST
+    I think I need to check who checks if the solution is right.
+    when is being checked when 
+
+    14:17 KST
+    yeah. let's see what the checking function is actually trying to do.
+    I can check two things
+    1)Rinekby scanner to track down the origin
+    2)Just go to ethernaut github.
