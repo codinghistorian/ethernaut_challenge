@@ -337,3 +337,146 @@ def unknownd38def5b(addr _param1): # not payable
 
     220422 15:00 KST 
     I will come back tomorrow. 
+
+    220423 11:37 KST
+    I think we need to trace back where the 'submit instance' is called to see what are the conditions
+    that my code is passed.
+    But... I think maybe I can just try to make 
+    keccak256(whatIsTheMeaningOfLife(uint8)) + 2
+    function signature + one number parameter.
+    I think it is worth trying this way.
+    Let's do it.
+
+    
+
+    11:42 KST first attempt to make bytecode
+    The calldata should be like what I said above,
+    so let's try.
+
+    keccak256(whatIsTheMeaningOfLife(uint8)) =
+    bf68140ec5a7fa7a1c1d60305282b41b704a833801e4611612447b410dd3a43a
+
+    bf68140e   <- function signature.
+    CALLDATA should be ....um.......... 0xbf68140e02
+    let's just put 02 as parameter.
+    
+####before####
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0xE0   <-224   224/8 = 28bytes    and I need to do one byte  27*8 = 216 = 0xD8
+    SHR 
+    PUSH4 0xCA47E49A  <- should be updated
+    EQ    -12
+    PUSH1 0x0F   
+    JUMPI -14
+    JUMPDEST   -15
+    STOP
+
+####after####       0xbf68140e02 version
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0xD8
+    SHR 
+    PUSH4 0xbf68140e02               <-if this doesn't work work on the version below
+    EQ    
+    PUSH1 0x10     
+    JUMPI
+    JUMPDEST
+    STOP
+                  0xCA47E49A
+    0x60003560D81C63bf68140e02146010575B00
+    11:57 KST
+    Let's try!
+    .. transactionf failed....?
+    12:07 KST
+    okay. Let's try to trace back to the guy who checks whether the contract has passed
+    or not.
+
+
+
+####after####       0xbf68140e2 version
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0x1E      <- should now be  240/8 in hex which is 0x1E
+    SHR 
+    PUSH4 0xbf68140e2               <-if this doesn't work
+    EQ    
+    PUSH1 0x0F   
+    JUMPI
+    JUMPDEST  
+    STOP    
+
+    220423 12:20 KST
+    It seems like it just have to pass.
+    No need to make no parameter.
+    No Nothing.
+    So I will make the function signature one more time without any parameter
+
+
+    ####attempt 12:23 KST####
+    PUSH1 0x00
+    CALLDATALOAD
+    PUSH1 0xE0
+    SHR 
+    PUSH4 0x650500c1  <- should be updated
+    EQ    
+    PUSH1 0x10
+    JUMPI -15
+    JUMPDEST   -16
+    STOP
+
+    0x60003560E01C63650500c1146010575B00
+
+    keccak256(whatIsTheMeaningOfLife()) =
+    650500c15ce33a97ad219acb4e19e643d45dc96f54e4ebdc9a34689cbc433599
+
+    220423 12:25 KSt
+    IF THIS THING ABOVE DOES NOT WORK, I WILL CALLDATACOPY AND THEN RETURN
+
+    12:30 KST
+    attempt with
+    0x60003560E01C63650500c1146010575B00
+
+
+    https://rinkeby.etherscan.io/tx/0x3855952d0959374dcb6917f08d6161988b130e672fb08436c8e6598bd92a3e7a
+    contract address
+    0xc58fc8bf2fef9db27e546ee58ef4cf2478e29c7e
+
+    Okay, it failed. So I will try to return sth this time.
+    what if I just try to return just boolean?
+    
+    PUSH1 1
+    PUSH1 0x80
+    MSTORE
+    PUSH1 0x01
+    PUSH1 0x80
+    RETURN
+
+    0x600160805260016080F3
+
+    12:40 KST
+
+    failed, so I guess.... I do need to add the function
+    whatIsTheMeaningOfLife()
+    cuz, ye know, obviously the checker smart contract calls that function.
+    hm... this time I can think of two solutions
+    1)make a simple function that just returns a bool with solidity and cut down the shit.
+    2)try again with the bytecode above but just add this function condition.
+
+    I should try the first one.
+
+
+
+    {
+	"generatedSources": [],
+	"linkReferences": {},
+	"object": "608060405234801561001057600080fd5b5060b88061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063650500c114602d575b600080fd5b60336047565b604051603e9190605d565b60405180910390f35b60006001905090565b6057816076565b82525050565b6000602082019050607060008301846050565b92915050565b6000811515905091905056fea264697066735822122065f77b218380f9983d1a1ac474fa5fa421e71dd86be90839aa215b5b3ac7722264736f6c63430008000033",
+	"opcodes": "
+    
+    PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT 
+    JUMPDEST POP PUSH1 0xB8 DUP1 PUSH2 0x1F PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x28 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x650500C1 EQ PUSH1 0x2D JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x33 PUSH1 0x47 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH1 0x3E SWAP2 SWAP1 PUSH1 0x5D JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH1 0x0 PUSH1 0x1 SWAP1 POP SWAP1 JUMP JUMPDEST PUSH1 0x57 DUP2 PUSH1 0x76 JUMP JUMPDEST DUP3 MSTORE POP POP JUMP JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 ADD SWAP1 POP PUSH1 0x70 PUSH1 0x0 DUP4 ADD DUP5 PUSH1 0x50 JUMP JUMPDEST SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP2 ISZERO ISZERO SWAP1 POP SWAP2 SWAP1 POP JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 PUSH6 0xF77B218380F9 SWAP9 RETURNDATASIZE BYTE BYTE 0xC4 PUSH21 0xFA5FA421E71DD86BE90839AA215B5B3AC772226473 PUSH16 0x6C634300080000330000000000000000 ",
+}
+
+    220423 12:52 KST
+    okay. I think in order to fully deal with these bytecodes, I need to go back to this course of EVM under the hood. I have it on my phone.
+    I will just try to read it from the start.
