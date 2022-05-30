@@ -480,3 +480,14 @@ def unknownd38def5b(addr _param1): # not payable
     220423 12:52 KST
     okay. I think in order to fully deal with these bytecodes, I need to go back to this course of EVM under the hood. I have it on my phone.
     I will just try to read it from the start.
+    
+    
+    220530 11:36 GST
+    I thought
+    
+    if calldata == 0xca47e49a0000...00001
+    and return 1
+    it might work. but the issue is... still too long for 10 opcodes.
+    
+    PUSH 0X00 CALLDATALOAD PUSH 0xca47e49a0000...0000001
+    EQ PUSH JUMPDST'SNUMBER JUMPI REVERT JUMPDST .. then return 1
