@@ -491,3 +491,7 @@ def unknownd38def5b(addr _param1): # not payable
     
     PUSH 0X00 CALLDATALOAD PUSH 0xca47e49a0000...0000001
     EQ PUSH JUMPDST'SNUMBER JUMPI REVERT JUMPDST .. then return 1
+    
+    20230417
+
+    it seems like I should just deploy the contract in YUL that returns 42 nomatter what function selector was used to call a function in     the deployed contract.
